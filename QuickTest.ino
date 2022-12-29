@@ -4,7 +4,7 @@
 
 FASTLED_USING_NAMESPACE
 
-#define NUM_LEDS 50
+#define NUM_LEDS 50 // 53
 
 #define LED_PIN1 31
 #define LED_PIN2 32
@@ -12,22 +12,17 @@ FASTLED_USING_NAMESPACE
 #define LED_PIN4 34
 #define LED_PIN5 35
 #define LED_PIN6 36
-#define LED_PIN7 37
+#define LED_PIN7 43
 #define LED_PIN8 38
 #define LED_PIN9 39
 #define LED_PIN10 40
 #define LED_PIN11 41
 #define LED_PIN12 42
 
-//CRGB pin1leds[NUM_LEDS];
-
 #define COLOR_ORDER BRG
 #define LED_TYPE WS2811
 #define BRIGHTNESS          96
 #define FRAMES_PER_SECOND  120
-
-// speeds
-#define SLOW 1000
 
 CRGBArray<NUM_LEDS> pin1leds;
 CRGBArray<NUM_LEDS> pin2leds;
@@ -42,18 +37,28 @@ CRGBArray<NUM_LEDS> pin10leds;
 CRGBArray<NUM_LEDS> pin11leds;
 CRGBArray<NUM_LEDS> pin12leds;
 
-//speeds
-#define FadeSlow 5
-#define FadeNormal 10
-#define FadeFast 20
-#define FadeBalls 50
+// interupt pins 2, 3, 18, 19, 20, 21
+const byte interruptPin2 = 2;
+const byte interruptPin3 = 3;
+const byte interruptPin18 = 18;
+const byte interruptPin19 = 19;
+const byte interruptPin20 = 20;
+const byte interruptPin21 = 21;
 
-int currentSpeed = FadeFast; // change this to affect the overall speed
+volatile byte statelow = LOW; // trigger the interrupt whenever the pin is low
+volatile byte statechange = CHANGE; // trigger the interrupt whenever the pin changes value
+volatile byte staterising = RISING; // trigger when the pin goes from low to high
+volatile byte statefalling = FALLING; // trigger when the pin goes from high to low
 
-bool phase1 = false;
+// these will change when the state changes voltage
+// reset all to false
+// then set the correct phase based on the input interrupt pin to the correct phase
+bool phase0 = false; // idle animation sequence
+bool phase1 = true;
 bool phase2 = false;
-bool phase3 = true;
+bool phase3 = false;
 bool phase4 = false;
+bool phase5 = false;
 
 // constants won't change:
 const int full = 255;
@@ -89,34 +94,40 @@ void setup() {
   FastLED.addLeds<LED_TYPE, LED_PIN10, COLOR_ORDER>(pin10leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.addLeds<LED_TYPE, LED_PIN11, COLOR_ORDER>(pin11leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.addLeds<LED_TYPE, LED_PIN12, COLOR_ORDER>(pin12leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  
+  // experimental for now
+  pinMode(LED_PIN1, OUTPUT);
+  pinMode(LED_PIN2, OUTPUT);
+  pinMode(LED_PIN3, OUTPUT);
+  pinMode(LED_PIN4, OUTPUT);
+  pinMode(LED_PIN5, OUTPUT);
+  pinMode(LED_PIN6, OUTPUT);
+  pinMode(LED_PIN7, OUTPUT);
+  pinMode(LED_PIN8, OUTPUT);
+  pinMode(LED_PIN9, OUTPUT);
+  pinMode(LED_PIN10, OUTPUT);
+  pinMode(LED_PIN11, OUTPUT);
+  pinMode(LED_PIN12, OUTPUT);
+  
+  // interupt pins 2, 3, 18, 19, 20, 21
+  pinMode(interruptPin2, INPUT_PULLUP);
+  pinMode(interruptPin3, INPUT_PULLUP);
+  pinMode(interruptPin18, INPUT_PULLUP);
+  pinMode(interruptPin19, INPUT_PULLUP);
+  pinMode(interruptPin20, INPUT_PULLUP);
+  pinMode(interruptPin21, INPUT_PULLUP);
+
+  attachInterrupt(digitalPinToInterrupt(interruptPin2), doPhase1, CHANGE);  // pin 2 to phase 1  
+  attachInterrupt(digitalPinToInterrupt(interruptPin3), doPhase2, CHANGE);  // pin 2 to phase 1
+  attachInterrupt(digitalPinToInterrupt(interruptPin18), doPhase3, CHANGE);  // pin 2 to phase 1
+  attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase4, CHANGE);  // pin 2 to phase 1
+  // TODO phase 5, launch the sparkle ponies
+  // attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase5, CHANGE);  // pin 2 to phase 1
+
 
   FastLED.setBrightness(BRIGHTNESS);
-  FastLED.clear();
+  FastLED.clear(); // clears all LEDs to reset the stage
   FastLED.show();
-
-  //1000 to 1
-  //600 to 3
-  //300 to 7
-  //100 to 10
-
-  //Serial.begin(9600);
-  if (phase1 == true) {
-    interval = 1000;
-    multiplier = 1;
-  }
-  if (phase2 == true) {
-    interval = 600;
-    multiplier = 3;
-  }
-  if (phase3 == true) {
-    interval = 300;
-    multiplier = 7;
-  }
-  if (phase4 == true) {
-    interval = 100;
-    multiplier = 10;
-  }
-
 }
 
 typedef void (*SimpleStrandList[])();
@@ -130,6 +141,53 @@ int ledstrips [12] = { pin1leds, pin2leds, pin3leds, pin4leds, pin5leds, pin6led
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
+void doPhase1 () {
+  phase0 = false;
+  phase1 = true;
+  phase2 = false;
+  phase3 = false;
+  phase4 = false;
+  phase5 = false;
+  interval = 1000;
+  multiplier = 1;  
+}
+
+void doPhase2 () {
+  phase0 = false;
+  phase1 = false;
+  phase2 = true;
+  phase3 = false;
+  phase4 = false;
+  phase5 = false;
+  interval = 600;
+  multiplier = 3;
+}
+
+void doPhase3 () {
+  phase0 = false;
+  phase1 = false;
+  phase2 = false;
+  phase3 = true;
+  phase4 = false;
+  phase5 = false;
+  interval = 300;
+  multiplier = 7;
+}
+
+void doPhase4 () {
+  phase0 = false;
+  phase1 = false;
+  phase2 = false;
+  phase3 = false;
+  phase4 = true;
+  phase5 = false;
+  interval = 100;
+  multiplier = 10;
+}
+
+// sparkle pony shit
+void doPhase5 () {}
+
 void loop() {
  
   unsigned long currentMillis = millis();
@@ -140,6 +198,19 @@ void loop() {
 
     nextStrand();
   }
+  // fill_solid(pin1leds,NUM_LEDS, CRGB::Red);
+  // fill_solid(pin2leds,NUM_LEDS, CRGB::Orange);
+  // fill_solid(pin3leds,NUM_LEDS, CRGB::Yellow);
+  // fill_solid(pin4leds,NUM_LEDS, CRGB::Green);
+  // fill_solid(pin5leds,NUM_LEDS, CRGB::Blue);
+  // fill_solid(pin6leds,NUM_LEDS, CRGB::Brown);
+  // fill_solid(pin7leds,NUM_LEDS, CRGB::Red);
+  // fill_solid(pin8leds,NUM_LEDS, CRGB::Orange);
+  // fill_solid(pin9leds,NUM_LEDS, CRGB::Yellow);
+  // fill_solid(pin10leds,NUM_LEDS, CRGB::Green);
+  // fill_solid(pin11leds,NUM_LEDS, CRGB::Blue);
+  // fill_solid(pin12leds,NUM_LEDS, CRGB::Brown);
+  // FastLED.show();
 }
 
 
@@ -967,4 +1038,3 @@ void strand12() {
     FastLED.show();
   }
 }
-
