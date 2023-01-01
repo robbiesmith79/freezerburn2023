@@ -19,6 +19,8 @@ FASTLED_USING_NAMESPACE
 #define LED_PIN11 12
 #define LED_PIN12 13
 
+#define STRAND_COUNT 12
+
 #define COLOR_ORDER BRG
 #define LED_TYPE WS2811
 #define BRIGHTNESS          96
@@ -37,11 +39,11 @@ CRGBArray<NUM_LEDS> pin10leds;
 CRGBArray<NUM_LEDS> pin11leds;
 CRGBArray<NUM_LEDS> pin12leds;
 
-// interupt pins 2, 3, 18, 19, 20, 21
-const byte interruptPin2 = 15; // A1
-const byte interruptPin3 = 16; // A2
-const byte interruptPin18 = 17; // A3
-const byte interruptPin19 = 18; // A4
+// interrupt pins
+const byte interruptPinA1 = 15; // A1
+const byte interruptPinA2 = 16; // A2
+const byte interruptPinA3 = 17; // A3
+const byte interruptPinA4 = 18; // A4
 
 volatile byte statelow = LOW; // trigger the interrupt whenever the pin is low
 volatile byte statechange = CHANGE; // trigger the interrupt whenever the pin changes value
@@ -107,21 +109,18 @@ void setup() {
   pinMode(LED_PIN11, OUTPUT);
   pinMode(LED_PIN12, OUTPUT);
   
-  // interupt pins 2, 3, 18, 19, 20, 21
-  pinMode(interruptPin2, INPUT_PULLUP);
-  pinMode(interruptPin3, INPUT_PULLUP);
-  pinMode(interruptPin18, INPUT_PULLUP);
-  pinMode(interruptPin19, INPUT_PULLUP);
-  pinMode(interruptPin20, INPUT_PULLUP);
-  pinMode(interruptPin21, INPUT_PULLUP);
+  // Setup interrupt pins
+  pinMode(interruptPinA1, INPUT_PULLUP);
+  pinMode(interruptPinA2, INPUT_PULLUP);
+  pinMode(interruptPinA3, INPUT_PULLUP);
+  pinMode(interruptPinA4, INPUT_PULLUP);
 
-  attachInterrupt(digitalPinToInterrupt(interruptPin2), doPhase1, CHANGE);  // pin 2 to phase 1  
-  attachInterrupt(digitalPinToInterrupt(interruptPin3), doPhase2, CHANGE);  // pin 2 to phase 1
-  attachInterrupt(digitalPinToInterrupt(interruptPin18), doPhase3, CHANGE);  // pin 2 to phase 1
-  attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase4, CHANGE);  // pin 2 to phase 1
+  attachInterrupt(digitalPinToInterrupt(interruptPinA1), doPhase1, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(interruptPinA2), doPhase2, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(interruptPinA3), doPhase3, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(interruptPinA4), doPhase4, CHANGE);
   // TODO phase 5, launch the sparkle ponies
-  // attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase5, CHANGE);  // pin 2 to phase 1
-
+  // attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase5, CHANGE);
 
   FastLED.setBrightness(BRIGHTNESS);
   FastLED.clear(); // clears all LEDs to reset the stage
@@ -130,12 +129,12 @@ void setup() {
 
 typedef void (*SimpleStrandList[])();
 // these are functions!
-SimpleStrandList strands = { strand1, strand2, strand3, strand4, strand5, strand6, strand7, strand8, strand9, strand10, strand11, strand12 };
+//SimpleStrandList strands = { strand1, strand2, strand3, strand4, strand5, strand6, strand7, strand8, strand9, strand10, strand11, strand12 };
 
 uint8_t currentStrand = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 unsigned long previousMillis = 0;  // will store last time LED was updated
-int ledstrips [12] = { pin1leds, pin2leds, pin3leds, pin4leds, pin5leds, pin6leds, pin7leds, pin8leds, pin9leds, pin10leds, pin11leds, pin12leds};
+int ledstrips [STRAND_COUNT] = { pin1leds, pin2leds, pin3leds, pin4leds, pin5leds, pin6leds, pin7leds, pin8leds, pin9leds, pin10leds, pin11leds, pin12leds};
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
@@ -213,7 +212,7 @@ void loop() {
 
 
 void nextStrand() {
-  currentStrand = (currentStrand + 1) % ARRAY_SIZE( strands);
+  currentStrand = (currentStrand + 1) % STRAND_COUNT;
   //strands[currentStrand](); 
   allStrands(currentStrand); 
 }
@@ -236,7 +235,7 @@ void strand(int strand) {
 int getStrand(int strand, int subtract) {
   int newStrand = strand - subtract;
   if (newStrand < 0) {
-    newStrand += 12;
+    newStrand += STRAND_COUNT;
   } 
   return newStrand;
 }
@@ -320,5 +319,4 @@ void allStrands(int strand) {
     }
     FastLED.show();
   }
-    
 }
