@@ -39,6 +39,26 @@ CRGBArray<NUM_LEDS> pin10leds;
 CRGBArray<NUM_LEDS> pin11leds;
 CRGBArray<NUM_LEDS> pin12leds;
 
+// CRGB pin1leds[NUM_LEDS];
+// CRGB pin2leds[NUM_LEDS];
+// CRGB pin3leds[NUM_LEDS];
+// CRGB pin4leds[NUM_LEDS];
+// CRGB pin5leds[NUM_LEDS];
+// CRGB pin6leds[NUM_LEDS];
+// CRGB pin7leds[NUM_LEDS];
+// CRGB pin8leds[NUM_LEDS];
+// CRGB pin9leds[NUM_LEDS];
+// CRGB pin10leds[NUM_LEDS];
+// CRGB pin11leds[NUM_LEDS];
+// CRGB pin12leds[NUM_LEDS];
+
+uint8_t currentStrand = 0; // Index number of which pattern is current
+uint8_t gHue = 0; // rotating "base color" used by many of the patterns
+unsigned long previousMillis = 0;  // will store last time LED was updated
+CRGB* ledstrips [STRAND_COUNT] = { pin1leds, pin2leds, pin3leds, pin4leds, pin5leds, pin6leds, pin7leds, pin8leds, pin9leds, pin10leds, pin11leds, pin12leds};
+
+#define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
+
 // interrupt pins
 const byte interruptPinA1 = 15; // A1
 const byte interruptPinA2 = 16; // A2
@@ -61,14 +81,14 @@ bool phase4 = false;
 bool phase5 = false;
 
 // constants won't change:
-const int full = 255;
-const int first = 153;
-const int second = 76;
+#define full 255
+#define first 153
+#define second 76
 
 // thereexist a marriage between these values to make it go faster
-long interval = 1000;  // interval at which to blink (milliseconds)
-int spread = 76;
-int multiplier = 1;
+short interval = 1000;  // interval at which to blink (milliseconds)
+const int spread = 76;
+byte multiplier = 1;
 
 void setup() {
   fill_solid(pin1leds,NUM_LEDS, CRGB::Black);
@@ -127,17 +147,6 @@ void setup() {
   FastLED.show();
 }
 
-typedef void (*SimpleStrandList[])();
-// these are functions!
-//SimpleStrandList strands = { strand1, strand2, strand3, strand4, strand5, strand6, strand7, strand8, strand9, strand10, strand11, strand12 };
-
-uint8_t currentStrand = 0; // Index number of which pattern is current
-uint8_t gHue = 0; // rotating "base color" used by many of the patterns
-unsigned long previousMillis = 0;  // will store last time LED was updated
-int ledstrips [STRAND_COUNT] = { pin1leds, pin2leds, pin3leds, pin4leds, pin5leds, pin6leds, pin7leds, pin8leds, pin9leds, pin10leds, pin11leds, pin12leds};
-
-#define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
-
 void doPhase1 () {
   phase0 = false;
   phase1 = true;
@@ -195,25 +204,13 @@ void loop() {
 
     nextStrand();
   }
-  // fill_solid(pin1leds,NUM_LEDS, CRGB::Red);
-  // fill_solid(pin2leds,NUM_LEDS, CRGB::Orange);
-  // fill_solid(pin3leds,NUM_LEDS, CRGB::Yellow);
-  // fill_solid(pin4leds,NUM_LEDS, CRGB::Green);
-  // fill_solid(pin5leds,NUM_LEDS, CRGB::Blue);
-  // fill_solid(pin6leds,NUM_LEDS, CRGB::Brown);
-  // fill_solid(pin7leds,NUM_LEDS, CRGB::Red);
-  // fill_solid(pin8leds,NUM_LEDS, CRGB::Orange);
-  // fill_solid(pin9leds,NUM_LEDS, CRGB::Yellow);
-  // fill_solid(pin10leds,NUM_LEDS, CRGB::Green);
-  // fill_solid(pin11leds,NUM_LEDS, CRGB::Blue);
-  // fill_solid(pin12leds,NUM_LEDS, CRGB::Brown);
+
   // FastLED.show();
 }
 
 
 void nextStrand() {
   currentStrand = (currentStrand + 1) % STRAND_COUNT;
-  //strands[currentStrand](); 
   allStrands(currentStrand); 
 }
 
@@ -318,5 +315,5 @@ void allStrands(int strand) {
       fill_solid(ledstrips[currentStrandM9],NUM_LEDS, CHSV(0, 255, first-value)); 
     }
     FastLED.show();
-  }
+  }   
 }
