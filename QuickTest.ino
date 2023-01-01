@@ -6,18 +6,18 @@ FASTLED_USING_NAMESPACE
 
 #define NUM_LEDS 50 // 53
 
-#define LED_PIN1 31
-#define LED_PIN2 32
-#define LED_PIN3 33
-#define LED_PIN4 34
-#define LED_PIN5 35
-#define LED_PIN6 36
-#define LED_PIN7 43
-#define LED_PIN8 38
-#define LED_PIN9 39
-#define LED_PIN10 40
-#define LED_PIN11 41
-#define LED_PIN12 42
+#define LED_PIN1 2
+#define LED_PIN2 3
+#define LED_PIN3 4
+#define LED_PIN4 5
+#define LED_PIN5 6
+#define LED_PIN6 7
+#define LED_PIN7 8
+#define LED_PIN8 9
+#define LED_PIN9 10
+#define LED_PIN10 11
+#define LED_PIN11 12
+#define LED_PIN12 13
 
 #define COLOR_ORDER BRG
 #define LED_TYPE WS2811
@@ -38,12 +38,10 @@ CRGBArray<NUM_LEDS> pin11leds;
 CRGBArray<NUM_LEDS> pin12leds;
 
 // interupt pins 2, 3, 18, 19, 20, 21
-const byte interruptPin2 = 2;
-const byte interruptPin3 = 3;
-const byte interruptPin18 = 18;
-const byte interruptPin19 = 19;
-const byte interruptPin20 = 20;
-const byte interruptPin21 = 21;
+const byte interruptPin2 = 15; // A1
+const byte interruptPin3 = 16; // A2
+const byte interruptPin18 = 17; // A3
+const byte interruptPin19 = 18; // A4
 
 volatile byte statelow = LOW; // trigger the interrupt whenever the pin is low
 volatile byte statechange = CHANGE; // trigger the interrupt whenever the pin changes value
@@ -216,12 +214,8 @@ void loop() {
 
 void nextStrand() {
   currentStrand = (currentStrand + 1) % ARRAY_SIZE( strands);
-  strands[currentStrand]();  
-}
-
-void fillStrand(int strand, int value) {
-  fill_solid(ledstrips[strand-1],NUM_LEDS, CHSV(0, 255, value)); 
-  FastLED.show(); 
+  //strands[currentStrand](); 
+  allStrands(currentStrand); 
 }
 
 // prototype
@@ -238,803 +232,93 @@ void strand(int strand) {
   }
 }
 
-void strand1() {
-  fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
+// returns the requested strand less the subtractor
+int getStrand(int strand, int subtract) {
+  int newStrand = strand - subtract;
+  if (newStrand < 0) {
+    newStrand += 12;
+  } 
+  return newStrand;
 }
 
-void strand2() {
-  fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, second)); 
+void allStrands(int strand) {
+  // what is this strand and the two before it
+  int currentStrandM0 = getStrand(strand,0); //   pin1
+  int currentStrandM1 = getStrand(strand,1); //   pin2
+  int currentStrandM2 = getStrand(strand,2); //   pin3
+  int currentStrandM3 = getStrand(strand,3); //   pin4
+  int currentStrandM4 = getStrand(strand,4); //   pin5
+  int currentStrandM5 = getStrand(strand,5); //   pin6
+  int currentStrandM6 = getStrand(strand,6); //   pin7
+  int currentStrandM7 = getStrand(strand,7); //   pin8
+  int currentStrandM8 = getStrand(strand,8); //   pin9
+  int currentStrandM9 = getStrand(strand,9); //   pin10
+  int currentStrandM10 = getStrand(strand,10); // pin11
+  int currentStrandM11 = getStrand(strand,11); // pin12
+
+  fill_solid(ledstrips[currentStrandM0],NUM_LEDS, CHSV(0, 255, full)); 
+  fill_solid(ledstrips[currentStrandM11],NUM_LEDS, CHSV(0, 255, first)); 
+  fill_solid(ledstrips[currentStrandM10],NUM_LEDS, CHSV(0, 255, second)); 
   if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, second)); 
+    fill_solid(ledstrips[currentStrandM6],NUM_LEDS, CHSV(0, 255, full)); 
+    fill_solid(ledstrips[currentStrandM5],NUM_LEDS, CHSV(0, 255, first)); 
+    fill_solid(ledstrips[currentStrandM4],NUM_LEDS, CHSV(0, 255, second)); 
   }
   if (phase3 == true) {
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, second)); 
+    fill_solid(ledstrips[currentStrandM3],NUM_LEDS, CHSV(0, 255, full)); 
+    fill_solid(ledstrips[currentStrandM2],NUM_LEDS, CHSV(0, 255, first)); 
+    fill_solid(ledstrips[currentStrandM1],NUM_LEDS, CHSV(0, 255, second)); 
 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, second));
+    fill_solid(ledstrips[currentStrandM9],NUM_LEDS, CHSV(0, 255, full)); 
+    fill_solid(ledstrips[currentStrandM8],NUM_LEDS, CHSV(0, 255, first)); 
+    fill_solid(ledstrips[currentStrandM7],NUM_LEDS, CHSV(0, 255, second));
   }
   if (phase4 == true) {
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first)); 
+    fill_solid(ledstrips[currentStrandM2],NUM_LEDS, CHSV(0, 255, full)); 
+    fill_solid(ledstrips[currentStrandM1],NUM_LEDS, CHSV(0, 255, first)); 
 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first)); 
+    fill_solid(ledstrips[currentStrandM4],NUM_LEDS, CHSV(0, 255, full)); 
+    fill_solid(ledstrips[currentStrandM3],NUM_LEDS, CHSV(0, 255, first)); 
 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
+    fill_solid(ledstrips[currentStrandM8],NUM_LEDS, CHSV(0, 255, full)); 
+    fill_solid(ledstrips[currentStrandM7],NUM_LEDS, CHSV(0, 255, first)); 
 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
+    fill_solid(ledstrips[currentStrandM10],NUM_LEDS, CHSV(0, 255, full)); 
+    fill_solid(ledstrips[currentStrandM9],NUM_LEDS, CHSV(0, 255, first)); 
   }
   FastLED.show(); 
   for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, second-value)); 
+    fill_solid(ledstrips[currentStrandM0],NUM_LEDS, CHSV(0, 255, full-value)); 
+    fill_solid(ledstrips[currentStrandM11],NUM_LEDS, CHSV(0, 255, first-value)); 
+    fill_solid(ledstrips[currentStrandM10],NUM_LEDS, CHSV(0, 255, second-value)); 
     if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, second-value)); 
+      fill_solid(ledstrips[currentStrandM6],NUM_LEDS, CHSV(0, 255, full-value)); 
+      fill_solid(ledstrips[currentStrandM5],NUM_LEDS, CHSV(0, 255, first-value)); 
+      fill_solid(ledstrips[currentStrandM4],NUM_LEDS, CHSV(0, 255, second-value)); 
     }
     if (phase3 == true) {
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full-value));  
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first-value));
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, second-value)); 
+      fill_solid(ledstrips[currentStrandM3],NUM_LEDS, CHSV(0, 255, full-value)); 
+      fill_solid(ledstrips[currentStrandM2],NUM_LEDS, CHSV(0, 255, first-value)); 
+      fill_solid(ledstrips[currentStrandM1],NUM_LEDS, CHSV(0, 255, second-value)); 
 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full-value));  
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first-value));
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, second-value)); 
+      fill_solid(ledstrips[currentStrandM9],NUM_LEDS, CHSV(0, 255, full-value)); 
+      fill_solid(ledstrips[currentStrandM8],NUM_LEDS, CHSV(0, 255, first-value)); 
+      fill_solid(ledstrips[currentStrandM7],NUM_LEDS, CHSV(0, 255, second-value));
     }
     if (phase4 == true) {
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full-value));  
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first-value));
+      fill_solid(ledstrips[currentStrandM2],NUM_LEDS, CHSV(0, 255, full-value)); 
+      fill_solid(ledstrips[currentStrandM1],NUM_LEDS, CHSV(0, 255, first-value)); 
 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first-value));
+      fill_solid(ledstrips[currentStrandM4],NUM_LEDS, CHSV(0, 255, full-value)); 
+      fill_solid(ledstrips[currentStrandM3],NUM_LEDS, CHSV(0, 255, first-value)); 
 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first-value));
+      fill_solid(ledstrips[currentStrandM8],NUM_LEDS, CHSV(0, 255, full-value)); 
+      fill_solid(ledstrips[currentStrandM7],NUM_LEDS, CHSV(0, 255, first-value)); 
 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first-value));
+      fill_solid(ledstrips[currentStrandM10],NUM_LEDS, CHSV(0, 255, full-value)); 
+      fill_solid(ledstrips[currentStrandM9],NUM_LEDS, CHSV(0, 255, first-value)); 
     }
     FastLED.show();
   }
-}
-
-void strand3() {
-  fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
-
-}
-
-void strand4() {
-  fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
-}
-
-void strand5() {
-  fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
-}
-
-
-void strand6() {
-  fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
-}
-void strand7() {
-  fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, second-value));
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-    }
-    FastLED.show();
-  }
-}
-void strand8() {
-  fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
-}
-void strand9() {
-  fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
-
-}
-void strand10() {
-  fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
-}
-void strand11() {
-  fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
-}
-void strand12() {
-  fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, second)); 
-  if (phase2 == true || phase3 == true || phase4 == true) {
-    fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, second)); 
-  }
-  if (phase3 == true) {
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, second)); 
-
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, second));
-  }
-  if (phase4 == true) {
-    fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
-
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
-    fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first)); 
-  }
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    if (phase2 == true || phase3 == true || phase4 == true) {
-      fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin5leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-    }
-    if (phase3 == true) {
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, second-value)); 
-
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, second-value));
-    }
-    if (phase4 == true) {
-      fill_solid(pin2leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin4leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin3leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-
-      fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full-value)); 
-      fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first-value)); 
-    }
-    FastLED.show();
-  }
+    
 }
