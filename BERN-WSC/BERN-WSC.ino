@@ -65,11 +65,6 @@ const byte interruptPinA2 = 16; // A2
 const byte interruptPinA3 = 17; // A3
 const byte interruptPinA4 = 18; // A4
 
-volatile byte statelow = LOW; // trigger the interrupt whenever the pin is low
-volatile byte statechange = CHANGE; // trigger the interrupt whenever the pin changes value
-volatile byte staterising = RISING; // trigger when the pin goes from low to high
-volatile byte statefalling = FALLING; // trigger when the pin goes from high to low
-
 // these will change when the state changes voltage
 // reset all to false
 // then set the correct phase based on the input interrupt pin to the correct phase
@@ -135,12 +130,12 @@ void setup() {
   pinMode(interruptPinA3, INPUT_PULLUP);
   pinMode(interruptPinA4, INPUT_PULLUP);
 
-  attachInterrupt(digitalPinToInterrupt(interruptPinA1), doPhase1, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(interruptPinA2), doPhase2, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(interruptPinA3), doPhase3, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(interruptPinA4), doPhase4, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(interruptPinA1), doPhase1, RISING);
+  attachInterrupt(digitalPinToInterrupt(interruptPinA2), doPhase2, RISING);
+  attachInterrupt(digitalPinToInterrupt(interruptPinA3), doPhase3, RISING);
+  attachInterrupt(digitalPinToInterrupt(interruptPinA4), doPhase4, RISING);
   // TODO phase 5, launch the sparkle ponies
-  // attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase5, CHANGE);
+  // attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase5, RISING);
 
   FastLED.setBrightness(BRIGHTNESS);
   FastLED.clear(); // clears all LEDs to reset the stage
