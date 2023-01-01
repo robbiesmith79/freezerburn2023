@@ -60,10 +60,10 @@ CRGB* ledstrips [STRAND_COUNT] = { pin1leds, pin2leds, pin3leds, pin4leds, pin5l
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 // interrupt pins
-const byte interruptPinA1 = 15; // A1
-const byte interruptPinA2 = 16; // A2
-const byte interruptPinA3 = 17; // A3
-const byte interruptPinA4 = 18; // A4
+const byte interruptPinA1 = 15; // A1 BLACK
+const byte interruptPinA2 = 16; // A2 GREY
+const byte interruptPinA3 = 17; // A3 WHITE
+const byte interruptPinA4 = 18; // A4 GREEN
 
 // these will change when the state changes voltage
 // reset all to false
