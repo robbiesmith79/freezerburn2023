@@ -62,9 +62,9 @@ bool phase4 = false;
 bool phase5 = false;
 
 // Brightness levels
-#define full 255
-#define first 153
-#define second 76
+const uint8_t full   = 255;
+const uint8_t first  = 153;
+const uint8_t second = 76;
 
 // thereexist a marriage between these values to make it go faster
 short interval = 1000;  // interval at which to blink (milliseconds)
