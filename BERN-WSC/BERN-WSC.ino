@@ -1,4 +1,3 @@
-
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
@@ -39,19 +38,6 @@ CRGBArray<NUM_LEDS> pin10leds;
 CRGBArray<NUM_LEDS> pin11leds;
 CRGBArray<NUM_LEDS> pin12leds;
 
-// CRGB pin1leds[NUM_LEDS];
-// CRGB pin2leds[NUM_LEDS];
-// CRGB pin3leds[NUM_LEDS];
-// CRGB pin4leds[NUM_LEDS];
-// CRGB pin5leds[NUM_LEDS];
-// CRGB pin6leds[NUM_LEDS];
-// CRGB pin7leds[NUM_LEDS];
-// CRGB pin8leds[NUM_LEDS];
-// CRGB pin9leds[NUM_LEDS];
-// CRGB pin10leds[NUM_LEDS];
-// CRGB pin11leds[NUM_LEDS];
-// CRGB pin12leds[NUM_LEDS];
-
 uint8_t currentStrand = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 unsigned long previousMillis = 0;  // will store last time LED was updated
@@ -75,10 +61,10 @@ bool phase3 = false;
 bool phase4 = false;
 bool phase5 = false;
 
-// constants won't change:
-#define full 255
-#define first 153
-#define second 76
+// Brightness levels
+const uint8_t full   = 255;
+const uint8_t first  = 153;
+const uint8_t second = 76;
 
 // thereexist a marriage between these values to make it go faster
 short interval = 1000;  // interval at which to blink (milliseconds)
