@@ -195,20 +195,6 @@ void nextStrand() {
   allStrands(currentStrand); 
 }
 
-// prototype
-void strand(int strand) {
-  fill_solid(ledstrips[strand-1],NUM_LEDS, CHSV(0, 255, full)); 
-  fill_solid(ledstrips[strand-2],NUM_LEDS, CHSV(0, 255, first)); 
-  fill_solid(ledstrips[strand-3],NUM_LEDS, CHSV(0, 255, second)); 
-  FastLED.show(); 
-  for (int value = 0; value < spread; value+=multiplier) {
-    fill_solid(ledstrips[strand-1],NUM_LEDS, CHSV(0, 255, full-value)); 
-    fill_solid(ledstrips[strand-2],NUM_LEDS, CHSV(0, 255, first-value)); 
-    fill_solid(ledstrips[strand-3],NUM_LEDS, CHSV(0, 255, second-value)); 
-    FastLED.show();
-  }
-}
-
 // returns the requested strand less the subtractor
 int getStrand(int strand, int subtract) {
   int newStrand = strand - subtract;
