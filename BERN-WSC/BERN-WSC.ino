@@ -17,6 +17,11 @@ FASTLED_USING_NAMESPACE
 #define LED_PIN11 41
 #define LED_PIN12 42
 
+const byte interruptPinPhase1 = 18; // white
+const byte interruptPinPhase2 = 19; // grey
+const byte interruptPinPhase3 = 20; // black
+const byte interruptPinPhase4 = 21; // green
+
 #define COLOR_ORDER BRG
 #define LED_TYPE WS2811  
 #define BRIGHTNESS          96
@@ -34,12 +39,6 @@ CRGB pin9leds[NUM_LEDS];
 CRGB pin10leds[NUM_LEDS];
 CRGB pin11leds[NUM_LEDS];
 CRGB pin12leds[NUM_LEDS];
-
-// all interupt pins 18, 19, 20, 21
-const byte interruptPin18 = 18; // white
-const byte interruptPin19 = 19; // grey
-const byte interruptPin20 = 20; // black
-const byte interruptPin21 = 21; // green
 
 // reset all to false
 // then set the correct phase based on the input interrupt pin to the correct phase
@@ -59,8 +58,6 @@ long interval = 1000;  // interval at which to blink (milliseconds)
 int spread = 76;
 int multiplier = 1;
 
-typedef void (*SimpleStrandList[])();
-
 void strand1();
 void strand2();
 void strand3();
@@ -75,6 +72,7 @@ void strand11();
 void strand12();
 
 // these are functions!
+typedef void (*SimpleStrandList[])();
 SimpleStrandList strands = { strand1, strand2, strand3, strand4, strand5, strand6, strand7, strand8, strand9, strand10, strand11, strand12 };
 uint8_t currentStrand = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
@@ -264,7 +262,6 @@ void rainbowWithGlitter()
   addGlitter(80);
 }
 
-
 void setup() {
 
   // put your setup code here, to run once:
@@ -295,18 +292,17 @@ void setup() {
   pinMode(LED_PIN11, OUTPUT);
   pinMode(LED_PIN12, OUTPUT);
   
-  // interupt pins 2, 3, 18, 19, 20, 21
-  pinMode(interruptPin18, INPUT_PULLUP);
-  pinMode(interruptPin19, INPUT_PULLUP);
-  pinMode(interruptPin20, INPUT_PULLUP);
-  pinMode(interruptPin21, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin18), doPhase1, RISING);  // pin 2 to phase 1  
-  attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase2, RISING);  // pin 2 to phase 1
-  attachInterrupt(digitalPinToInterrupt(interruptPin20), doPhase3, RISING);  // pin 2 to phase 1
-  attachInterrupt(digitalPinToInterrupt(interruptPin21), doPhase4, RISING);  // pin 2 to phase 1
-
+  pinMode(interruptPinPhase1, INPUT_PULLUP);
+  pinMode(interruptPinPhase2, INPUT_PULLUP);
+  pinMode(interruptPinPhase3, INPUT_PULLUP);
+  pinMode(interruptPinPhase4, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPinPhase1), doPhase1, RISING);  
+  attachInterrupt(digitalPinToInterrupt(interruptPinPhase2), doPhase2, RISING);
+  attachInterrupt(digitalPinToInterrupt(interruptPinPhase3), doPhase3, RISING);
+  attachInterrupt(digitalPinToInterrupt(interruptPinPhase4), doPhase4, RISING);
   // TODO phase 5, launch the sparkle ponies
-  // attachInterrupt(digitalPinToInterrupt(interruptPin19), doPhase5, CHANGE);  // pin 2 to phase 1
+  // attachInterrupt(digitalPinToInterrupt(interruptPinPhase5), doPhase5, CHANGE);
+  
   FastLED.setBrightness(BRIGHTNESS);
   FastLED.clear(); // clears all LEDs to reset the stage
   FastLED.show();
@@ -370,10 +366,10 @@ void doPhase5 () {}
 void loop() {
  
    // any button is pushed 
-  if (digitalRead(interruptPin18) == LOW || 
-      digitalRead(interruptPin19) == LOW ||
-      digitalRead(interruptPin20) == LOW ||
-      digitalRead(interruptPin21) == LOW) {
+  if (digitalRead(interruptPinPhase1) == LOW || 
+      digitalRead(interruptPinPhase2) == LOW ||
+      digitalRead(interruptPinPhase3) == LOW ||
+      digitalRead(interruptPinPhase4) == LOW) {
       phase0 = false;
   } else {
       phase0 = true;
