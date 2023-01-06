@@ -58,6 +58,10 @@ long interval = 1000;  // interval at which to blink (milliseconds)
 int spread = 76;
 int multiplier = 1;
 
+// Strand function pointers...
+// Each `strandN` list entry is a function to update *all* strands,
+// where `N` is the "lead" strand (typically the brightest for fading patterns)
+typedef void (*SimpleStrandList[])();
 void strand1();
 void strand2();
 void strand3();
@@ -70,15 +74,18 @@ void strand9();
 void strand10();
 void strand11();
 void strand12();
-
-// these are functions!
-typedef void (*SimpleStrandList[])();
 SimpleStrandList strands = { strand1, strand2, strand3, strand4, strand5, strand6, strand7, strand8, strand9, strand10, strand11, strand12 };
+
+// TODO JLOM Why isn't this an array of CRGB*?
+int ledstrips [12] = { pin1leds, pin2leds, pin3leds, pin4leds, pin5leds, pin6leds, pin7leds, pin8leds, pin9leds, pin10leds, pin11leds, pin12leds};
+
 uint8_t currentStrand = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 unsigned long previousMillis = 0;  // will store last time LED was updated
-int ledstrips [12] = { pin1leds, pin2leds, pin3leds, pin4leds, pin5leds, pin6leds, pin7leds, pin8leds, pin9leds, pin10leds, pin11leds, pin12leds};
+
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
+
+// START PHASE 0 CODE BLOCK
 
 uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 uint8_t gCurrentStrandNumber = 0; // Index number of which light strand is the current
@@ -262,6 +269,21 @@ void rainbowWithGlitter()
   addGlitter(80);
 }
 
+void executePhase0() {
+  // Call the current pattern function once, updating the 'leds' array
+    gPatterns[gCurrentPatternNumber]();
+
+    FastLED.show();  
+    // insert a delay to keep the framerate modest
+    FastLED.delay(1000/FRAMES_PER_SECOND); 
+
+    // do some periodic updates
+    EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+    EVERY_N_SECONDS( 10 ) { nextPattern(); } // change patterns periodically
+}
+
+// END PHASE 0 CODE BLOCK
+
 void setup() {
 
   // put your setup code here, to run once:
@@ -308,6 +330,31 @@ void setup() {
   FastLED.show();
 
   doPhase0();
+}
+
+void loop() {
+ 
+  // any button is pushed 
+  if (digitalRead(interruptPinPhase1) == LOW || 
+      digitalRead(interruptPinPhase2) == LOW ||
+      digitalRead(interruptPinPhase3) == LOW ||
+      digitalRead(interruptPinPhase4) == LOW) {
+      phase0 = false;
+  } else {
+      phase0 = true;
+  }
+
+  // idle sequence
+  if (phase0) {
+    executePhase0();
+  } else {
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= interval) {
+      // save the last time you blinked the LED
+      previousMillis = currentMillis;
+      nextStrand();
+    }
+  }
 }
 
 void doPhase0 () {
@@ -360,45 +407,6 @@ void doPhase4 () {
   phase5 = false;
   interval = 100;
   multiplier = 10;
-}
-// sparkle pony shit
-void doPhase5 () {}
-void loop() {
- 
-   // any button is pushed 
-  if (digitalRead(interruptPinPhase1) == LOW || 
-      digitalRead(interruptPinPhase2) == LOW ||
-      digitalRead(interruptPinPhase3) == LOW ||
-      digitalRead(interruptPinPhase4) == LOW) {
-      phase0 = false;
-  } else {
-      phase0 = true;
-  }
-
-
- // idle sequence
-  if (phase0) {
-    /* new code */
-    // Call the current pattern function once, updating the 'leds' array
-    gPatterns[gCurrentPatternNumber]();
-
-    // send the 'leds' array out to the actual LED strip
-    FastLED.show();  
-    // insert a delay to keep the framerate modest
-    FastLED.delay(1000/FRAMES_PER_SECOND); 
-
-    // do some periodic updates
-    EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
-    EVERY_N_SECONDS( 10 ) { nextPattern(); } // change patterns periodically
-  } else {
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= interval) {
-      // save the last time you blinked the LED
-      previousMillis = currentMillis;
-      nextStrand();
-    }
-  }
-
 }
 
 void nextStrand() {
