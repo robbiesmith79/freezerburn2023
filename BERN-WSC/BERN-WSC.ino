@@ -407,11 +407,6 @@ void nextStrand() {
   strands[currentStrand]();  
 }
 
-void fillStrand(int strand, int value) {
-  fill_solid(ledstrips[strand-1],NUM_LEDS, CHSV(0, 255, value)); 
-  FastLED.show(); 
-}
-
 void strand1() {
   fill_solid(pin1leds,NUM_LEDS, CHSV(0, 255, full)); 
   fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, first)); 
