@@ -47,7 +47,7 @@ bool phase1 = false;
 bool phase2 = false;
 bool phase3 = false;
 bool phase4 = false;
-bool phase5 = false;
+
 // constants won't change:
 const int full = 255;
 const int first = 153;
@@ -322,8 +322,6 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(interruptPinPhase2), doPhase2, RISING);
   attachInterrupt(digitalPinToInterrupt(interruptPinPhase3), doPhase3, RISING);
   attachInterrupt(digitalPinToInterrupt(interruptPinPhase4), doPhase4, RISING);
-  // TODO phase 5, launch the sparkle ponies
-  // attachInterrupt(digitalPinToInterrupt(interruptPinPhase5), doPhase5, CHANGE);
   
   FastLED.setBrightness(BRIGHTNESS);
   FastLED.clear(); // clears all LEDs to reset the stage
@@ -363,7 +361,6 @@ void doPhase0 () {
   phase2 = false;
   phase3 = false;
   phase4 = false;
-  phase5 = false;
   interval = 1000; // these won't matter
   multiplier = 1;  // these won't matter  
 }
@@ -374,7 +371,6 @@ void doPhase1 () {
   phase2 = false;
   phase3 = false;
   phase4 = false;
-  phase5 = false;
   interval = 1000;
   multiplier = 1;  
 }
@@ -384,7 +380,6 @@ void doPhase2 () {
   phase2 = true;
   phase3 = false;
   phase4 = false;
-  phase5 = false;
   interval = 600;
   multiplier = 3;
 }
@@ -394,7 +389,6 @@ void doPhase3 () {
   phase2 = false;
   phase3 = true;
   phase4 = false;
-  phase5 = false;
   interval = 300;
   multiplier = 7;
 }
@@ -404,7 +398,6 @@ void doPhase4 () {
   phase2 = false;
   phase3 = false;
   phase4 = true;
-  phase5 = false;
   interval = 100;
   multiplier = 10;
 }
@@ -822,6 +815,7 @@ void strand6() {
     FastLED.show();
   }
 }
+
 void strand7() {
   fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, full)); 
   fill_solid(pin6leds,NUM_LEDS, CHSV(0, 255, first)); 
@@ -888,6 +882,7 @@ void strand7() {
     FastLED.show();
   }
 }
+
 void strand8() {
   fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, full)); 
   fill_solid(pin7leds,NUM_LEDS, CHSV(0, 255, first)); 
@@ -954,6 +949,7 @@ void strand8() {
     FastLED.show();
   }
 }
+
 void strand9() {
   fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, full)); 
   fill_solid(pin8leds,NUM_LEDS, CHSV(0, 255, first)); 
@@ -1019,8 +1015,8 @@ void strand9() {
     }
     FastLED.show();
   }
-
 }
+
 void strand10() {
   fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, full)); 
   fill_solid(pin9leds,NUM_LEDS, CHSV(0, 255, first)); 
@@ -1087,6 +1083,7 @@ void strand10() {
     FastLED.show();
   }
 }
+
 void strand11() {
   fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, full)); 
   fill_solid(pin10leds,NUM_LEDS, CHSV(0, 255, first)); 
@@ -1153,6 +1150,7 @@ void strand11() {
     FastLED.show();
   }
 }
+
 void strand12() {
   fill_solid(pin12leds,NUM_LEDS, CHSV(0, 255, full)); 
   fill_solid(pin11leds,NUM_LEDS, CHSV(0, 255, first)); 
